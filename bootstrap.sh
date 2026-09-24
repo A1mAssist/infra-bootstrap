@@ -14,13 +14,6 @@ die() {
   exit 1
 }
 
-ensure_docker() {
-  if ! command -v docker >/dev/null 2>&1; then
-    curl -fsSL https://get.docker.com | sh
-  fi
-  docker info >/dev/null 2>&1 || die 'docker is not running'
-}
-
 git_auth_args=()
 if [[ -n $GITHUB_TOKEN ]]; then
   git_auth_args=(-c "http.extraHeader=Authorization: Bearer $GITHUB_TOKEN")
@@ -49,7 +42,6 @@ main() {
   [[ $EUID -eq 0 ]] || die 'run as root'
   [[ -n $REPO_URL ]] || die 'REPO_URL is required'
   [[ -n $TARGET_SCRIPT ]] || die 'TARGET_SCRIPT is required'
-  ensure_docker
   clone_or_update_repo
   run_target_script "$@"
 }
